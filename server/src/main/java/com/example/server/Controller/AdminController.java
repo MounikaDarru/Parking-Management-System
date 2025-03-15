@@ -1,6 +1,5 @@
 package com.example.server.Controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,10 +21,17 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    // @GetMapping("/{id}/checkedin-users")
+    // public ResponseEntity<List<Map<String, String>>> getCheckedInUsers() {
+    //     List<Map<String, String>> users = adminService.getCheckedInUsers();
+    //     return ResponseEntity.ok(users);
+    // }
+
     @GetMapping("/{id}/checkedin-users")
-    public ResponseEntity<List<Map<String, String>>> getCheckedInUsers() {
-        List<Map<String, String>> users = adminService.getCheckedInUsers();
+    public ResponseEntity<List<Map<String, String>>> getCheckedInUsers(@PathVariable String id) {
+        List<Map<String, String>> users = adminService.getCheckedInUsers(id);
         return ResponseEntity.ok(users);
     }
+
 
 }
