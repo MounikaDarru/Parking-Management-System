@@ -21,12 +21,6 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    // @GetMapping("/{id}/checkedin-users")
-    // public ResponseEntity<List<Map<String, String>>> getCheckedInUsers() {
-    //     List<Map<String, String>> users = adminService.getCheckedInUsers();
-    //     return ResponseEntity.ok(users);
-    // }
-
     @GetMapping("/{id}/checkedin-users")
     public ResponseEntity<List<Map<String, String>>> getCheckedInUsers(@PathVariable String id) {
         List<Map<String, String>> users = adminService.getCheckedInUsers(id);
