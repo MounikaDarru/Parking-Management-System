@@ -61,38 +61,10 @@ const Dashboard = () => {
       const response = await axios.post(`http://localhost:8080/api/users/${selectedAdmin.id}/reserve/${slotId}`, { username });
       alert(response.data);
       setReservedSlot(slotId); // Store the reserved slot for check-in
+      navigate(`/${selectedAdmin.id}/checkin/${slotId}`);
       handleAdminSelect(selectedAdmin.id);
     } catch (error) {
       alert(`Error booking slot: ${JSON.stringify(error)}`);
-    }
-  };
-
-  const handleCheckIn = async () => {
-    if (!selectedAdmin || !reservedSlot) {
-      alert("No slot reserved for check-in.");
-      return;
-    }
-    try {
-      const response = await axios.post(`http://localhost:8080/api/users/${selectedAdmin.id}/checkin/${reservedSlot}`, { username });
-      alert(response.data);
-      handleAdminSelect(selectedAdmin.id);
-    } catch (error) {
-      alert(`Error checking in: ${error.response?.data || error.message}`);
-    }
-  };
-
-  const handleCheckOut = async () => {
-    if (!selectedAdmin || !reservedSlot) {
-      alert("No slot reserved for check-out.");
-      return;
-    }
-    try {
-      const response = await axios.post(`http://localhost:8080/api/users/${selectedAdmin.id}/checkout/${reservedSlot}`, { username });
-      alert(response.data);
-      setReservedSlot(null);
-      handleAdminSelect(selectedAdmin.id);
-    } catch (error) {
-      alert(`Error checking out: ${error.response?.data || error.message}`);
     }
   };
 
@@ -152,18 +124,6 @@ const Dashboard = () => {
               <p>No parking slots available.</p>
             )}
           </ul>
-        </div>
-      )}
-
-      {/* Check-In Button */}
-      {reservedSlot && (
-        <div>
-          <button onClick={handleCheckIn} style={{ marginTop: "10px", marginRight: "10px" }}>
-            Check In
-          </button>
-          <button onClick={handleCheckOut} style={{ marginTop: "10px" }}>
-            Check Out
-          </button>
         </div>
       )}
 
