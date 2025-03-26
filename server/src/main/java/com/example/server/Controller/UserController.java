@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -62,10 +63,22 @@ public class UserController {
     }
 
     @PostMapping("/{id}/checkout/{slotId}")
-    public ResponseEntity<String> checkOut(@PathVariable String id, @PathVariable String slotId, @RequestBody User user) {
-        double charges = userService.checkOut(id, slotId, user.getUsername());
-        if (charges > 0) return ResponseEntity.ok("Checkout successful. Charges: $" + charges);
-        return ResponseEntity.status(400).body("Checkout failed.");
-    }
+    public ResponseEntity<Map<String, Object>> checkOut(
+        @PathVariable String id, 
+        @PathVariable String slotId, 
+        @RequestBody Map<String, String> request) {
+
+            String username = request.get("username");
+            if (username == null || username.isEmpty()) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Username is required"));
+            }
+
+            try {
+                Map<String, Object> billDetails = userService.checkOut(id, slotId, username);
+                return ResponseEntity.ok(billDetails);
+            } catch (RuntimeException e) {
+                return ResponseEntity.status(400).body(Collections.singletonMap("error", e.getMessage()));
+            }
+        }
 
 }

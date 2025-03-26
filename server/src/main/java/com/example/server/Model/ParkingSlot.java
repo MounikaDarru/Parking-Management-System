@@ -22,15 +22,17 @@ public class ParkingSlot {
     private LocalDateTime bookingTime;  // 🕒 Stores when the slot was booked
     private LocalDateTime checkInTime;  // 🕒 Stores when the user checks in
     private LocalDateTime checkOutTime; // 🕒 Stores when the user checks out
+    private String paymentMode;
 
     public ParkingSlot() {}
-    public ParkingSlot(String slotId, boolean booked, String bookedBy, LocalDateTime bookingTime, LocalDateTime checkInTime, LocalDateTime checkOutTime) {
+    public ParkingSlot(String slotId, boolean booked, String bookedBy, LocalDateTime bookingTime, LocalDateTime checkInTime, LocalDateTime checkOutTime, String paymentMode) {
         this.slotId = slotId;
         this.booked = booked;
         this.bookedBy = bookedBy;
         this.bookingTime = bookingTime;
         this.checkInTime = checkInTime;
         this.checkOutTime = checkOutTime;
+        this.paymentMode = paymentMode;
     }
 
     @PrePersist

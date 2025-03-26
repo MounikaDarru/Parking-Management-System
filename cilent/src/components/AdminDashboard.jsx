@@ -39,6 +39,7 @@ const AdminDashboard = () => {
             <th>Username</th>
             <th>Check-in Time</th>
             <th>Check-out Time</th>
+            <th>Payment Mode</th>
           </tr>
         </thead>
         <tbody>
@@ -49,11 +50,12 @@ const AdminDashboard = () => {
                 <td>{user.username}</td>
                 <td>{new Date(user.checkInTime).toLocaleString()}</td>
                 <td>{user.checkOutTime ? new Date(user.checkOutTime).toLocaleString() : "No checkout yet"}</td>
+                <td>{user.paymentMode || "No Payment Yet"}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4">No users checked in yet.</td>
+              <td colSpan="5">No users checked in yet.</td>
             </tr>
           )}
         </tbody>

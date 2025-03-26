@@ -95,7 +95,6 @@ public class AdminService {
             if (userInfo.get("slotId").equals(slot.getSlotId())) {
                 // ✅ Instead of removing, update checkOutTime
                 userInfo.put("checkOutTime", slot.getCheckOutTime().toString());
-                System.out.println("✅ Updated checkout time for slot " + slot.getSlotId() + " to " + slot.getCheckOutTime());
                 break;
             }
         }
