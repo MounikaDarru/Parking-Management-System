@@ -81,4 +81,24 @@ public class UserController {
             }
         }
 
+    @PostMapping("/{id}/update-payment/{slotId}")
+    public ResponseEntity<String> updatePaymentMode(
+        @PathVariable String id, 
+        @PathVariable String slotId, 
+        @RequestBody Map<String, String> request
+    ) {
+        String paymentMode = request.get("paymentMode");
+
+        if (paymentMode == null || paymentMode.isEmpty()) {
+            return ResponseEntity.badRequest().body("❌ Payment mode is required.");
+        }
+
+        boolean success = userService.updatePaymentMode(id, slotId, paymentMode);
+        if (success) {
+            return ResponseEntity.ok("✅ Payment mode updated successfully.");
+        } else {
+            return ResponseEntity.status(400).body("❌ Failed to update payment mode.");
+        }
+    }
+
 }

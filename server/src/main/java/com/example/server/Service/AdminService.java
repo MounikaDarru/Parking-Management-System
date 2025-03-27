@@ -122,6 +122,7 @@ public class AdminService {
         for (Map<String, String> user : checkedInUsers) {
             for (ParkingSlot slot : adminSlots) {
                 if (slot.getSlotId().equals(user.get("slotId"))) {
+                    user.put("paymentMode", slot.getPaymentMode() != null ? slot.getPaymentMode() : "Not Paid");
                     result.add(user);
                     break;
                 }

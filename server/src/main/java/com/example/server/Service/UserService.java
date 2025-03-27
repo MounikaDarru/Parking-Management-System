@@ -25,6 +25,9 @@ import com.example.server.Repository.AdminRepository;
 import com.example.server.Repository.UserRepository;
 import com.example.server.events.CheckInEvent;
 import com.example.server.events.CheckOutEvent;
+import com.example.server.events.PaymentEvent;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -166,7 +169,7 @@ public class UserService {
                 long durationMinutes = ChronoUnit.MINUTES.between(slot.getCheckInTime(), slot.getCheckOutTime());
                 double ratePerMinute = 0.5; // Example rate: $0.5 per minute
                 double totalAmount = durationMinutes * ratePerMinute;
-                
+
                 // ✅ Publish CheckOut Event
                 eventPublisher.publishEvent(new CheckOutEvent(this, id, slot));
 
@@ -178,6 +181,7 @@ public class UserService {
                 billDetails.put("amount", totalAmount);
                 billDetails.put("checkInTime", slot.getCheckInTime().toString());
                 billDetails.put("checkOutTime", slot.getCheckOutTime().toString());
+                billDetails.put("paymentMode", slot.getPaymentMode());
 
                 // ✅ Reset Slot After Returning Bill
                 slot.setBooked(false);
@@ -185,6 +189,7 @@ public class UserService {
                 slot.setBookingTime(null);
                 slot.setCheckInTime(null);
                 slot.setCheckOutTime(null);
+                slot.setPaymentMode(null);
     
                 adminRepository.save(admin);
                 return billDetails;
@@ -193,4 +198,25 @@ public class UserService {
         throw new RuntimeException("No slot reserved for check-out");
     }
 
+    public boolean updatePaymentMode(String id, String slotId, String paymentMode) {
+        Optional<Admin> adminOptional = adminRepository.findById(id);
+        if (adminOptional.isEmpty()) return false;
+    
+        Admin admin = adminOptional.get();
+        for (ParkingSlot slot : admin.getParkingSlots()) {
+            if (slot.getSlotId().equals(slotId)) {
+                slot.setPaymentMode(paymentMode);
+                adminRepository.save(admin);
+
+                eventPublisher.publishEvent(new PaymentEvent(this, id, slot, paymentMode));
+                
+                adminRepository.save(admin);
+                return true;
+            }  
+        }
+        
+        return false;
+    }
+    
+    
 }
