@@ -182,7 +182,7 @@ public class UserService {
                 billDetails.put("checkInTime", slot.getCheckInTime().toString());
                 billDetails.put("checkOutTime", slot.getCheckOutTime().toString());
                 billDetails.put("paymentMode", slot.getPaymentMode());
-
+                
                 // ✅ Reset Slot After Returning Bill
                 slot.setBooked(false);
                 slot.setBookedBy(null);
@@ -190,8 +190,8 @@ public class UserService {
                 slot.setCheckInTime(null);
                 slot.setCheckOutTime(null);
                 slot.setPaymentMode(null);
-    
                 adminRepository.save(admin);
+
                 return billDetails;
             }
         }
@@ -209,14 +209,14 @@ public class UserService {
                 adminRepository.save(admin);
 
                 eventPublisher.publishEvent(new PaymentEvent(this, id, slot, paymentMode));
-                
                 adminRepository.save(admin);
+
                 return true;
             }  
         }
         
         return false;
-    }
     
+    }
     
 }

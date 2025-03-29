@@ -18,6 +18,8 @@ import com.example.server.Model.ParkingSlot;
 import com.example.server.Repository.AdminRepository;
 import com.example.server.events.CheckInEvent;
 import com.example.server.events.CheckOutEvent;
+import com.example.server.events.PaymentEvent;
+import com.paypal.api.payments.Payment;
 
 @Service
 public class AdminService {
@@ -102,6 +104,29 @@ public class AdminService {
         checkedInUsersCache.put(id, checkedInUsers);
     }
 
+    @EventListener
+    public void handleCheckOutEvent(PaymentEvent event) {
+        String id = event.getId();
+        ParkingSlot slot = event.getSlot();
+
+        if (!checkedInUsersCache.containsKey(id)) {
+            System.out.println("⚠️ Invalid admin ID provided!");
+            return;
+        }
+
+        List<Map<String, String>> checkedInUsers = checkedInUsersCache.get(id);
+
+        for (Map<String, String> userInfo : checkedInUsers) {
+            if (userInfo.get("slotId").equals(slot.getSlotId())) {
+                // ✅ Instead of removing, update checkOutTime
+                userInfo.put("paymentMode", slot.getPaymentMode().toString());
+                break;
+            }
+        }
+
+        checkedInUsersCache.put(id, checkedInUsers);
+    }
+
     public List<Map<String, String>> getCheckedInUsers(String adminId) {
         Optional<Admin> adminOptional = adminRepository.findById(adminId);
         if (adminOptional.isEmpty()) {
@@ -122,7 +147,7 @@ public class AdminService {
         for (Map<String, String> user : checkedInUsers) {
             for (ParkingSlot slot : adminSlots) {
                 if (slot.getSlotId().equals(user.get("slotId"))) {
-                    user.put("paymentMode", slot.getPaymentMode() != null ? slot.getPaymentMode() : "Not Paid");
+                    // user.put("paymentMode", slot.getPaymentMode() != null ? slot.getPaymentMode() : "Not Paid");
                     result.add(user);
                     break;
                 }

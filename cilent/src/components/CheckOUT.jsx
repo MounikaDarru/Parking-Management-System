@@ -53,10 +53,11 @@ const CheckOUT = () => {
             // ✅ Update Payment Mode in Backend
             const response = await axios.post(
                 `http://localhost:8080/api/users/${selectedAdmin}/update-payment/${reservedSlot}`, 
-                { paymentMode }
+                { username, paymentMode }
             );
     
             alert(response.data);
+
     
             if (paymentMode === "online") {
                 navigate("/payment-gateway", { state: { billDetails } });

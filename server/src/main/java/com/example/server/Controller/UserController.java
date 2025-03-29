@@ -87,10 +87,12 @@ public class UserController {
         @PathVariable String slotId, 
         @RequestBody Map<String, String> request
     ) {
-        String paymentMode = request.get("paymentMode");
 
-        if (paymentMode == null || paymentMode.isEmpty()) {
-            return ResponseEntity.badRequest().body("❌ Payment mode is required.");
+        String paymentMode = request.get("paymentMode");
+        String username = request.get("username");
+
+        if (username == null || username.isEmpty() || paymentMode == null || paymentMode.isEmpty()) {
+            return ResponseEntity.badRequest().body("❌ Payment mode and username required.");
         }
 
         boolean success = userService.updatePaymentMode(id, slotId, paymentMode);
