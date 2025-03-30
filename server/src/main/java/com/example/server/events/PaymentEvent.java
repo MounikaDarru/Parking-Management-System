@@ -6,17 +6,19 @@ import org.springframework.context.ApplicationEvent;
 
 import com.example.server.Model.ParkingSlot;
 
-public class CheckOutEvent extends ApplicationEvent {
+public class PaymentEvent extends ApplicationEvent {
     private final String id;
     private final ParkingSlot slot;
+    private final String paymentMode;
+    
 
-    public CheckOutEvent(Object source, String id, ParkingSlot slot) {
+    public PaymentEvent(Object source, String id, ParkingSlot slot, String paymentMode) {
         super(source);
         this.id = id;
         this.slot = slot;
-
-        if (this.slot.getCheckOutTime() == null) {
-            this.slot.setCheckOutTime(LocalDateTime.now());
+        this.paymentMode = paymentMode;
+        if (this.slot.getPaymentMode() == null) {
+            this.slot.setPaymentMode(paymentMode);
         }
     }
 
@@ -27,4 +29,8 @@ public class CheckOutEvent extends ApplicationEvent {
     public ParkingSlot getSlot() {
         return slot;
     }
-}    
+
+    public String getPaymentMode() {        
+        return paymentMode;
+    }
+}

@@ -3,6 +3,7 @@ package com.example.server.Service;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +25,9 @@ import com.example.server.Repository.AdminRepository;
 import com.example.server.Repository.UserRepository;
 import com.example.server.events.CheckInEvent;
 import com.example.server.events.CheckOutEvent;
+import com.example.server.events.PaymentEvent;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -145,38 +149,74 @@ public class UserService {
         return false;
     }
 
-    public double checkOut(String id, String slotId, String username) {
+    public Map<String, Object> checkOut(String id, String slotId, String username) {
         Optional<Admin> adminOptional = adminRepository.findById(id);
-        if (adminOptional.isEmpty()) return 0.0;
-
+        if (adminOptional.isEmpty()) throw new RuntimeException("Admin not found");
+    
         Admin admin = adminOptional.get();
         for (ParkingSlot slot : admin.getParkingSlots()) {
             if (slot.getSlotId().equals(slotId) && slot.getBookedBy().equals(username)) {
                 slot.setCheckOutTime(LocalDateTime.now());
+    
+                // ✅ Ensure Check-in Time Exists
+                if (slot.getCheckInTime() == null) {
+                    throw new RuntimeException("Check-in time is missing. Cannot calculate duration.");
+                }
+    
+                // ✅ Save Check-out Time Before Duration Calculation
+                adminRepository.save(admin);
+                
+                long durationMinutes = ChronoUnit.MINUTES.between(slot.getCheckInTime(), slot.getCheckOutTime());
+                double ratePerMinute = 0.5; // Example rate: $0.5 per minute
+                double totalAmount = durationMinutes * ratePerMinute;
 
-                double charges = calculateCharges(slot.getCheckInTime(), slot.getCheckOutTime());
+                // ✅ Publish CheckOut Event
+                eventPublisher.publishEvent(new CheckOutEvent(this, id, slot));
 
+                adminRepository.save(admin);
+    
+                // ✅ Prepare Billing Details
+                Map<String, Object> billDetails = new HashMap<>();
+                billDetails.put("duration", durationMinutes);
+                billDetails.put("amount", totalAmount);
+                billDetails.put("checkInTime", slot.getCheckInTime().toString());
+                billDetails.put("checkOutTime", slot.getCheckOutTime().toString());
+                billDetails.put("paymentMode", slot.getPaymentMode());
+                
+                // ✅ Reset Slot After Returning Bill
                 slot.setBooked(false);
                 slot.setBookedBy(null);
                 slot.setBookingTime(null);
                 slot.setCheckInTime(null);
                 slot.setCheckOutTime(null);
-    
+                slot.setPaymentMode(null);
                 adminRepository.save(admin);
 
-                // ✅ Publish the CheckOutEvent
-                eventPublisher.publishEvent(new CheckOutEvent(this, id, slot));
-
-                return charges;
+                return billDetails;
             }
         }
-        return 0.0;
+        throw new RuntimeException("No slot reserved for check-out");
     }
 
-    private double calculateCharges(LocalDateTime checkIn, LocalDateTime checkOut) {
-        long minutesUsed = ChronoUnit.MINUTES.between(checkIn, checkOut);
-        double ratePerMinute = 0.5; // Example: $0.5 per minute
-        return minutesUsed * ratePerMinute;
-    }
+    public boolean updatePaymentMode(String id, String slotId, String paymentMode) {
+        Optional<Admin> adminOptional = adminRepository.findById(id);
+        if (adminOptional.isEmpty()) return false;
+    
+        Admin admin = adminOptional.get();
+        for (ParkingSlot slot : admin.getParkingSlots()) {
+            if (slot.getSlotId().equals(slotId)) {
+                slot.setPaymentMode(paymentMode);
+                adminRepository.save(admin);
 
+                eventPublisher.publishEvent(new PaymentEvent(this, id, slot, paymentMode));
+                adminRepository.save(admin);
+
+                return true;
+            }  
+        }
+        
+        return false;
+    
+    }
+    
 }

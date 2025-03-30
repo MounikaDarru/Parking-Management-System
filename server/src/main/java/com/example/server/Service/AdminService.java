@@ -18,6 +18,8 @@ import com.example.server.Model.ParkingSlot;
 import com.example.server.Repository.AdminRepository;
 import com.example.server.events.CheckInEvent;
 import com.example.server.events.CheckOutEvent;
+import com.example.server.events.PaymentEvent;
+import com.paypal.api.payments.Payment;
 
 @Service
 public class AdminService {
@@ -77,34 +79,7 @@ public class AdminService {
 
         System.out.println("✅ AdminService updated: " + checkedInUsersCache);
 
-    }    
-
-    // @EventListener
-    // public void handleCheckOutEvent(CheckOutEvent event) {
-    //     String id = event.getId();
-    //     ParkingSlot slot = event.getSlot();
-
-
-    //     if (!checkedInUsersCache.containsKey(id)) {
-    //         System.out.println("⚠️ Invalid admin ID provided!");
-    //         return;
-    //     }
-
-    //     List<Map<String, String>> checkedInUsers = checkedInUsersCache.get(id);
-
-    //     for (Map<String, String> userInfo : checkedInUsers) {
-    //         if (userInfo.get("slotId").equals(slot.getSlotId())) {
-    //             userInfo.put("checkOutTime", (slot.getCheckOutTime() != null) ? slot.getCheckOutTime().toString() : "N/A");
-    //             break;
-    //         }
-    //     }
-
-    //     System.out.println(slot.getCheckOutTime());
-
-    //     checkedInUsersCache.put(id, checkedInUsers);
-    //     System.out.println("✅ AdminService updated: User checked out from slot " + slot.getSlotId() + " At " + slot.getCheckOutTime());
-    // }
-
+    }  
     
     @EventListener
     public void handleCheckOutEvent(CheckOutEvent event) {
@@ -119,10 +94,10 @@ public class AdminService {
         List<Map<String, String>> checkedInUsers = checkedInUsersCache.get(id);
 
         for (Map<String, String> userInfo : checkedInUsers) {
-            if (userInfo.get("slotId").equals(slot.getSlotId())) {
+            System.out.println(checkedInUsers.get(checkedInUsers.size() - 1).get("checkInTime"));
+            if (userInfo.get("slotId").equals(slot.getSlotId()) && userInfo.get("checkInTime").equals(checkedInUsers.get(checkedInUsers.size() - 1).get("checkInTime")))  {
                 // ✅ Instead of removing, update checkOutTime
                 userInfo.put("checkOutTime", slot.getCheckOutTime().toString());
-                System.out.println("✅ Updated checkout time for slot " + slot.getSlotId() + " to " + slot.getCheckOutTime());
                 break;
             }
         }
@@ -130,49 +105,28 @@ public class AdminService {
         checkedInUsersCache.put(id, checkedInUsers);
     }
 
+    @EventListener
+    public void handlePaymentEvent(PaymentEvent event) {
+        String id = event.getId();
+        ParkingSlot slot = event.getSlot();
 
-    // public List<Map<String, String>> getCheckedInUsers() {
-        
-    //     if (checkedInUsersCache.keySet() == null || checkedInUsersCache.keySet().isEmpty()) {
-    //         System.out.println("⚠️ Invalid admin ID provided!");
-    //         return Collections.emptyList();
-    //     }
+        if (!checkedInUsersCache.containsKey(id)) {
+            System.out.println("⚠️ Invalid admin ID provided!");
+            return;
+        }
 
-    //     List<Map<String, String>> result = new ArrayList<>();
-    //     for (String key : checkedInUsersCache.keySet()) {
-    //         result.addAll(checkedInUsersCache.getOrDefault(key, Collections.emptyList()));
-    //     }
-    //     return result;
-    // }
+        List<Map<String, String>> checkedInUsers = checkedInUsersCache.get(id);
 
-    // public List<Map<String, String>> getCheckedInUsers(String id) {
-    //     Optional<Admin> adminOptional = adminRepository.findById(id);
-    //     if (adminOptional.isEmpty()) {
-    //         System.out.println("⚠️ Invalid admin ID provided!");
-    //         return Collections.emptyList();
-    //     }
-    
-    //     Admin admin = adminOptional.get();
-    //     List<Map<String, String>> checkedInUsers = new ArrayList<>();
-    
-    //     // Retrieve only the users who checked into this admin's parking slots
-    //     List<ParkingSlot> adminSlots = admin.getParkingSlots();
-    
-    //     for (ParkingSlot slot : adminSlots) {
-    //         if (slot.getCheckInTime() != null && slot.isBooked()) {
-    //             Map<String, String> userData = new HashMap<>();
-    //             userData.put("slotId", slot.getSlotId());
-    //             userData.put("username", slot.getBookedBy());
-    //             userData.put("checkInTime", slot.getCheckInTime().toString());
-    //             userData.put("checkOutTime", (slot.getCheckOutTime() != null) ? slot.getCheckOutTime().toString() : "No checkout yet");
-    //             checkedInUsers.add(userData);
-    //         }
-    //     }
-    
-    //     System.out.println("✅ Checked-in users for Admin " + id + ": " + checkedInUsers);
-    //     return checkedInUsers;
-    // }
-    
+        for (Map<String, String> userInfo : checkedInUsers) {
+            if ((userInfo.get("slotId").equals(slot.getSlotId())) && (userInfo.get("checkInTime").equals(checkedInUsers.get(checkedInUsers.size() - 1).get("checkInTime")) && userInfo.get("checkOutTime").equals(checkedInUsers.get(checkedInUsers.size() - 1).get("checkOutTime")))) {
+                // ✅ Instead of removing, update checkOutTime
+                userInfo.put("paymentMode", slot.getPaymentMode().toString());
+                break;
+            }
+        }
+
+        checkedInUsersCache.put(id, checkedInUsers);
+    }
 
     public List<Map<String, String>> getCheckedInUsers(String adminId) {
         Optional<Admin> adminOptional = adminRepository.findById(adminId);

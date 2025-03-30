@@ -1,4 +1,4 @@
-:root {
+/* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -65,4 +65,101 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+} */
+
+/* =============================
+   MAIN STYLESHEET - main.css
+   ============================= */
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
+
+/* Theme Colors */
+:root {
+  --primary-color: #1E3A8A; /* Deep Blue */
+  --secondary-color: #F59E0B; /* Yellow Accent */
+  --background-color: #F3F4F6; /* Light Gray */
+  --text-color: #111827; /* Dark Text */
+  --button-hover: #2563EB; /* Brighter Blue */
+}
+
+/* Body Styling */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Containers */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* Buttons */
+.button {
+  display: inline-block;
+  padding: 12px 20px;
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: 5px;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--button-hover);
+}
+
+/* Forms */
+form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background: var(--primary-color);
+  color: #fff;
+  margin-top: 30px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+      padding: 10px;
+  }
+}
+
+/* Error Message Styling (Applies Globally) */
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+
