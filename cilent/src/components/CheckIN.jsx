@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import "../stylesheets/CheckIN.css";
 
 const CheckIN = () => {
   const { reservedSlot } = useParams();
@@ -34,10 +35,12 @@ const handleCheckIn = async () => {
   };
 
   return (
-    <div>
-      <h2>Check-in Timer</h2>
-      <h3>Time Remaining: {seconds} seconds</h3>
-      <button onClick={handleCheckIn}>Check-in</button>
+    <div className="checkin-container">
+      <div className="checkin-card">
+        <h2 className="checkin-title">Check-in Timer</h2>
+        <h3 className="timer">Time Remaining: {seconds} seconds</h3>
+        <button className="checkin-btn" onClick={handleCheckIn}>Check-in</button>
+      </div>
     </div>
   );
 };
