@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import '../stylesheets/Dashboard.css';
 
 const Dashboard = () => {
   const [username, setUsername] = useState("");
@@ -75,61 +76,70 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Welcome {username}!</h2>
-
-      {/* Select Location */}
-      <h3>Select Location</h3>
-      <select onChange={(e) => setSelectedLocation(e.target.value)}>
-        <option value="">-- Select Location --</option>
-        {Array.from(new Set(admins.map((admin) => admin.location))).map((loc, index) => (
-          <option key={index} value={loc}>{loc}</option>
-        ))}
-      </select>
-
-      {/* Admins in Selected Location */}
-      {selectedLocation && (
-        <div>
-          <h3>Admins in {selectedLocation}</h3>
-          <ul>
-            {filteredAdmins.length > 0 ? (
-              filteredAdmins.map((admin) => (
-                <li key={admin.id || admin.email}>
-                  {admin.username} - {admin.email} 
-                  <button onClick={() => handleAdminSelect(admin.id)}>View Parking Slots</button>
-                </li>
-              ))
-            ) : (
-              <p>No admins available in this location.</p>
-            )}
-          </ul>
+    <div className="dashboard-container">
+      <div className="dashboard-card">
+        <h2 className="dashboard-title">Welcome, {username}!</h2>
+        <center>
+        <div className="location-selector" style={{width: "350px"}}>
+          <label>Select Location:</label>
+          <select onChange={(e) => setSelectedLocation(e.target.value)}>
+            <option value="">-- Select Location --</option>
+            {Array.from(new Set(admins.map((admin) => admin.location))).map((loc, index) => (
+              <option key={index} value={loc}>{loc}</option>
+            ))}
+          </select>
         </div>
-      )}
+        </center>
 
-      {/* Parking Slots Display */}
-      {selectedAdmin && (
-        <div>
-          <h3>Parking Slots</h3>
-          <ul>
-            {parkingSlots.length > 0 ? (
-              parkingSlots.map((slot, index) => (
-                <li key={slot.slotId || index}>
-                  Slot {slot.slotId || "Unknown"} - {slot.booked ? `Booked by ${slot.bookedBy}` : "Available"}{" "}
-                  {!slot.booked && (
-                    <button onClick={() => handleReserve(slot.slotId || index)}>Reserve</button>
-                  )}
-                </li>
-              ))
-            ) : (
-              <p>No parking slots available.</p>
-            )}
-          </ul>
-        </div>
-      )}
+        {selectedLocation && (
+          <div className="admin-list">
+            <h3>Admins in {selectedLocation}</h3>
+            <ul>
+              {filteredAdmins.length > 0 ? (
+                filteredAdmins.map((admin) => (
+                  <li key={admin.id || admin.email}>
+                    {admin.username} - {admin.email}
+                    <button className="btn" onClick={() => handleAdminSelect(admin.id)}>
+                      View Parking Slots
+                    </button>
+                  </li>
+                ))
+              ) : (
+                <p>No admins available in this location.</p>
+              )}
+            </ul>
+          </div>
+        )}
 
-      <button onClick={handleLogout} style={{ marginTop: "20px" }}>Logout</button>
+        {selectedAdmin && (
+          <div className="parking-slots">
+            <h3>Parking Slots</h3>
+            <ul>
+              {parkingSlots.length > 0 ? (
+                parkingSlots.map((slot, index) => (
+                  <li key={slot.slotId || index}>
+                    Slot {slot.slotId || "Unknown"} - {slot.booked ? `Booked by ${slot.bookedBy}` : "Available"} {" "}
+                    {!slot.booked && (
+                      <button className="btn reserve-btn" onClick={() => handleReserve(slot.slotId || index)}>
+                        Reserve
+                      </button>
+                    )}
+                  </li>
+                ))
+              ) : (
+                <p>No parking slots available.</p>
+              )}
+            </ul>
+          </div>
+        )}
+
+        <button className="btn logout-btn" onClick={handleLogout}>Logout</button>
+      </div>
     </div>
   );
+
 };
 
 export default Dashboard;
+
+

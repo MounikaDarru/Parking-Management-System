@@ -1,0 +1,111 @@
+/* Dashboard Container */
+@import url('../index.css');
+
+.dashboard-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(to right, #2c3e50, #34495e);
+}
+
+.dashboard-card {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  width: 750px;
+  text-align: center;
+}
+
+/* Title */
+.dashboard-title {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+/* Location Selector */
+.location-selector {
+  margin-bottom: 20px;
+}
+
+.location-selector label {
+  font-weight: bold;
+}
+
+.location-selector select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-left: 10px;
+}
+
+/* Admin List */
+.admin-list {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.admin-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-list li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-list li:last-child {
+  border-bottom: none;
+}
+
+/* Parking Slots */
+.parking-slots {
+  text-align: left;
+}
+
+.parking-slots ul {
+  list-style: none;
+  padding: 0;
+}
+
+.parking-slots li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.parking-slots li:last-child {
+  border-bottom: none;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s ease-in-out;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+.reserve-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+  margin-top: 20px;
+}
