@@ -94,7 +94,8 @@ public class AdminService {
         List<Map<String, String>> checkedInUsers = checkedInUsersCache.get(id);
 
         for (Map<String, String> userInfo : checkedInUsers) {
-            if (userInfo.get("slotId").equals(slot.getSlotId())) {
+            System.out.println(checkedInUsers.get(checkedInUsers.size() - 1).get("checkInTime"));
+            if (userInfo.get("slotId").equals(slot.getSlotId()) && userInfo.get("checkInTime").equals(checkedInUsers.get(checkedInUsers.size() - 1).get("checkInTime")))  {
                 // ✅ Instead of removing, update checkOutTime
                 userInfo.put("checkOutTime", slot.getCheckOutTime().toString());
                 break;
@@ -105,7 +106,7 @@ public class AdminService {
     }
 
     @EventListener
-    public void handleCheckOutEvent(PaymentEvent event) {
+    public void handlePaymentEvent(PaymentEvent event) {
         String id = event.getId();
         ParkingSlot slot = event.getSlot();
 
@@ -117,7 +118,7 @@ public class AdminService {
         List<Map<String, String>> checkedInUsers = checkedInUsersCache.get(id);
 
         for (Map<String, String> userInfo : checkedInUsers) {
-            if (userInfo.get("slotId").equals(slot.getSlotId())) {
+            if ((userInfo.get("slotId").equals(slot.getSlotId())) && (userInfo.get("checkInTime").equals(checkedInUsers.get(checkedInUsers.size() - 1).get("checkInTime")) && userInfo.get("checkOutTime").equals(checkedInUsers.get(checkedInUsers.size() - 1).get("checkOutTime")))) {
                 // ✅ Instead of removing, update checkOutTime
                 userInfo.put("paymentMode", slot.getPaymentMode().toString());
                 break;
@@ -147,7 +148,6 @@ public class AdminService {
         for (Map<String, String> user : checkedInUsers) {
             for (ParkingSlot slot : adminSlots) {
                 if (slot.getSlotId().equals(user.get("slotId"))) {
-                    // user.put("paymentMode", slot.getPaymentMode() != null ? slot.getPaymentMode() : "Not Paid");
                     result.add(user);
                     break;
                 }
